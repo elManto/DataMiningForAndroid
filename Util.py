@@ -8,3 +8,12 @@ def computeErrors(n, numberOfIstructions, X, W, Y, bias):
         if ((sum + bias) * Y[i] <= 0):
             numberOfErrors += 1
     return numberOfErrors
+
+
+def filterData():
+    with open("./opcode.txt", "r") as f:
+        opcode = f.readlines()
+    f.closed
+    res = [op[:-1] for op in opcode]
+
+    print res

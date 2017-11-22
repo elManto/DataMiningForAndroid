@@ -1,5 +1,6 @@
 import random
 from Util import computeErrors
+from Util import filterData
 
 
 def main():
@@ -43,7 +44,9 @@ def main():
         if (i > n):
             i = 1
         print "ERRORS: %s" % numberOfErrors
+        break
 
+    filterData()
 
 if __name__ == "__main__":
     main()
