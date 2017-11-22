@@ -1,9 +1,16 @@
 import random
 from Util import computeErrors
-from Util import filterData
+from Util import getListOfOpcode
 
+
+def filterData():
+    opcodes = getListOfOpcode()
 
 def main():
+    '''
+    Costruiamo il modello di apk ovvero definiamo le istruzioni che sono
+    sempre presenti in tutte le apk analizzate
+    '''
 
     n = 10000
     bias = 1
@@ -46,7 +53,7 @@ def main():
         print "ERRORS: %s" % numberOfErrors
         break
 
-    filterData()
+
 
 if __name__ == "__main__":
     main()

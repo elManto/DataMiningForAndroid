@@ -10,10 +10,8 @@ def computeErrors(n, numberOfIstructions, X, W, Y, bias):
     return numberOfErrors
 
 
-def filterData():
+def getListOfOpcode():
     with open("./opcode.txt", "r") as f:
         opcode = f.readlines()
     f.closed
-    res = [op[:-1] for op in opcode]
-
-    print res
+    return [op[:-1] for op in opcode]
