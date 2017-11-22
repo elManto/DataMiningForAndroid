@@ -24,6 +24,7 @@ def main():
     i = 1
     j = 0
     while (numberOfErrors > 0):
+        print "foulo"
         j += 1
         f = 0
         for h in range(0, numberOfIstructions):
