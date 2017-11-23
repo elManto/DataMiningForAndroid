@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6625f82e-615e-43fb-bae5-bd60a7ab9e39" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Main.py" afterPath="$PROJECT_DIR$/Main.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/csc455_HW3.db" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/DB.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MainDB.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/opcodewithfreq.sql" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.py" afterPath="$PROJECT_DIR$/db.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -29,8 +32,8 @@
       <file leaf-file-name="db.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/db.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+            <state relative-caret-position="1566">
+              <caret line="87" column="43" lean-forward="false" selection-start-line="87" selection-start-column="43" selection-end-line="87" selection-end-column="43" />
               <folding>
                 <element signature="e#0#22#0" expanded="true" />
               </folding>
@@ -285,8 +288,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/db.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+        <state relative-caret-position="1566">
+          <caret line="87" column="43" lean-forward="false" selection-start-line="87" selection-start-column="43" selection-end-line="87" selection-end-column="43" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
           </folding>

@@ -1,8 +1,10 @@
 import pymysql.cursors
 import struct
+import copy
 
 
-class database():
+
+class database:
 
     #usage: database("localhost", "root", "MmscC,eh43a", "opcodes")
     def __init__(self, host, user, pwd, db):
@@ -14,14 +16,45 @@ class database():
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor)
 
+    '''
+    Tale funzione prende come argomento un insieme di opcode (listOfOpcode)
+    e controllo se quell' opcode e' contenuto in tutti gli apk
+    
+    Torna un array di opcode comunia tutti
+    '''
+
     def defineFeature(self, listOfOpcodes):
-        with self.connection.cursor() as cursor:
-            query = "SELECT * FROM apk;"
-            cursor = self.connection.cursor()
-            cursor.execute(query)
-            res = cursor.fetchall()
-            print res
-            self.connection.commit()
+
+        #Creo un'array contenente tutti gli id degli apk
+
+        arrayIdAPK = []
+
+        # Tale array e' inizializzato a tutti gli opcode e poi piano piano
+        # tolgo quelli che non sono in tutti gli apk
+        listaDegliOpcodesInAlmenoUnAPK = list(listOfOpcodes)
+
+        query = "SELECT * FROM apk"
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+        tuple = cursor.fetchall()
+        for tupla in tuple:
+            arrayIdAPK.append(tupla['id'])
+        # qui ho popolato l'array e controllo nella tabella apk_opcode_frequency_map
+        # se l'apk con quell'id ha un l'opcode selezionato
+        for apk_id in arrayIdAPK:
+            for opcode in listOfOpcodes:
+                query = "SELECT * FROM apk_opcode_frequency_map WHERE  opcode_frequency_map_key='"+ opcode +"' AND  apk_id=" +str(apk_id)
+                print query
+                cursor = self.connection.cursor()
+                cursor.execute(query)
+                # Questa variabile vale 0 se non e' presente quell'istruzione nell'apk selezionato
+                # altrimenti
+                esiste = len(cursor.fetchall())
+                if esiste == 0 and listaDegliOpcodesInAlmenoUnAPK.__contains__(opcode):
+                    listaDegliOpcodesInAlmenoUnAPK.remove(opcode)
+        for i in listaDegliOpcodesInAlmenoUnAPK:
+            print i
+
 
     def getNumberOfAPK(self):
         query = "SELECT COUNT(*) FROM apk;"
@@ -53,29 +86,3 @@ class database():
             query = tmp + " apk_id=" + str(index) + \
                     " and opcode_frequency_map_key=" + feature + ";"
             freq = self.executeQuery(query)
-
-
-
-
-
-''' 
-try:
-    with connection.cursor() as cursor:
-        # Create a new record
-        sql = "INSERT INTO `users` (`email`, `password`) VALUES (%s, %s)"
-        cursor.execute(sql, ('webmaster@python.org', 'very-secret'))
-
-    # connection is not autocommit by default. So you must commit to save
-    # your changes.
-    connection.commit()
-
-    with connection.cursor() as cursor:
-        # Read a single record
-        sql = "SELECT `id`, `password` FROM `users` WHERE `email`=%s"
-        cursor.execute(sql, ('webmaster@python.org',))
-        result = cursor.fetchone()
-        print(result)
-
-finally:
-    connection.close()
-'''
