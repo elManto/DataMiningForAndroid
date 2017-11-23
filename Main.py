@@ -1,49 +1,54 @@
 import random
 from Util import computeErrors
 from Util import getListOfOpcode
+from db import database
 
 def filterData():
     opcodes = getListOfOpcode()
 
+    features = []
+    return features
+
 def main():
     '''
-    Costruiamo il modello di apk ovvero definiamo le istruzioni che sono
-    sempre presenti in tutte le apk analizzate
+    Now we are building the model of APK, i.e. a vector which represents
+    a each single APK containing the istructions existing in all the analysed
+    app
     '''
-
-    n = 10000
+    db = database("localhost", "root", "MmscC,eh43a", "opcodes")
+    n = db.getNumberOfAPK()     #total dimension of dataset
     bias = 1
-    numberOfIstructions = 100
 
-    x = [i for i in range(0, numberOfIstructions)]
+    features = filterData()
+    numberOfIstructions = len(features)
+    singleAPK = [i for i in range(0, numberOfIstructions)] #data
     W = [1 for i in range(0, numberOfIstructions)]
-    Y = [(random.randrange(-1, 2, 2)) for i in range(0, n)]
-    print Y
-    X = []
+    answers = db.getIsMalware()
+
+    X = []  # Matrix containing each APK vector
     for i in range(0, n):
-        X.append(x)
+        X.append(singleAPK)
 
     # calcolo il numero d'errori
-    numberOfErrors = computeErrors(n, numberOfIstructions, X, W, Y, bias)
+    numberOfErrors = computeErrors(n, numberOfIstructions, X, W, answers, bias)
 
     print numberOfErrors
 
     i = 1
     j = 0
     while (numberOfErrors > 0):
-        print "foulo"
         j += 1
         f = 0
         for h in range(0, numberOfIstructions):
             f += (X[i][h] * W[h])
         f += bias
         print "f: %s" % f
-        if (f * Y[i] <= 0):
+        if (f * answers[i] <= 0):
             for h in range(0, numberOfIstructions):
-                W[h] += Y[i] * X[i][h]
+                W[h] += answers[i] * X[i][h]
             print W
-            bias += Y[i]
-            numberOfErrors = computeErrors(n, numberOfIstructions, X, W, Y, bias)
+            bias += answers[i]
+            numberOfErrors = computeErrors(n, numberOfIstructions, X, W, answers, bias)
 
         i += 1
 

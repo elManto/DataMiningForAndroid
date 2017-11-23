@@ -1,4 +1,5 @@
 import pymysql.cursors
+import struct
 
 
 class database():
@@ -21,7 +22,43 @@ class database():
             res = cursor.fetchall()
             print res
             self.connection.commit()
-'''
+
+    def getNumberOfAPK(self):
+        query = "SELECT COUNT(*) FROM apk;"
+        dictionary = self.executeQuery(query)[0]
+        return dictionary["COUNT(*)"]
+
+
+    def executeQuery(self, query):
+        with self.connection.cursor() as cursor:
+            cursor = self.connection.cursor()
+            cursor.execute(query)
+            res = cursor.fetchall()
+            self.connection.commit()
+            return res
+
+
+    def getIsMalware(self):
+        query = "SELECT is_malware FROM apk;"
+        listOfDictionary = self.executeQuery(query)
+        return [struct.unpack('h', field["is_malware"] + "\x00")[0]
+               for field in listOfDictionary]
+
+
+    def getSingleAPKfrequency(self, features, index):
+        tmp = "SELECT opcode_frequency_map FROM apk_opcode_frequency_map WHERE "
+        count = 0
+        for feature in features:
+            count += 1
+            query = tmp + " apk_id=" + str(index) + \
+                    " and opcode_frequency_map_key=" + feature + ";"
+            freq = self.executeQuery(query)
+
+
+
+
+
+''' 
 try:
     with connection.cursor() as cursor:
         # Create a new record
