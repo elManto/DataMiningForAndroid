@@ -1,3 +1,8 @@
+'''
+Some useful functions...
+'''
+
+
 def computeErrors(n, numberOfIstructions, X, W, Y, bias):
     numberOfErrors = 0
     for i in range(0, n):

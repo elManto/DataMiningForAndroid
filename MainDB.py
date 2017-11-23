@@ -1,6 +1,7 @@
 from db import database
-import time
+from Util import getListOfOpcode
 
+opcodeList = getListOfOpcode()
 
 database = database("localhost","root"," ", "opcodes")
-database.defineFeature(["ADD_DOUBLE_2ADDR","FOULO"])
+database.defineFeature(["ADD_DOUBLE_2ADDR"])

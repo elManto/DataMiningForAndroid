@@ -1,12 +1,11 @@
 import pymysql.cursors
 import struct
-import copy
 
 
 
 class database:
 
-    #usage: database("localhost", "root", "MmscC,eh43a", "opcodes")
+    #usage Ex: database("localhost", "root", YOUR_PASSWORD, "opcodes")
     def __init__(self, host, user, pwd, db):
         self.connection = pymysql.connect(
             host=host,
@@ -16,44 +15,33 @@ class database:
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor)
 
-    '''
-    Tale funzione prende come argomento un insieme di opcode (listOfOpcode)
-    e controllo se quell' opcode e' contenuto in tutti gli apk
-    
-    Torna un array di opcode comunia tutti
-    '''
 
+    '''
+    This function takes as input a list of all the opcodes and checks if that
+    opcode is contained in every APK
+    '''
     def defineFeature(self, listOfOpcodes):
-
-        #Creo un'array contenente tutti gli id degli apk
-
+        # Creates an array which will contain all the id of the different APK
         arrayIdAPK = []
 
-        # Tale array e' inizializzato a tutti gli opcode e poi piano piano
-        # tolgo quelli che non sono in tutti gli apk
-        listaDegliOpcodesInAlmenoUnAPK = list(listOfOpcodes)
+        # Initializes the array with all the existent opcodes...
+        apkFeatures = list(listOfOpcodes)
 
+        # ...then, opcodes which are not contained in every APK are removed
         query = "SELECT * FROM apk"
-        cursor = self.connection.cursor()
-        cursor.execute(query)
-        tuple = cursor.fetchall()
+        tuple = self.executeQuery(query)
         for tupla in tuple:
             arrayIdAPK.append(tupla['id'])
-        # qui ho popolato l'array e controllo nella tabella apk_opcode_frequency_map
-        # se l'apk con quell'id ha un l'opcode selezionato
+
         for apk_id in arrayIdAPK:
             for opcode in listOfOpcodes:
-                query = "SELECT * FROM apk_opcode_frequency_map WHERE  opcode_frequency_map_key='"+ opcode +"' AND  apk_id=" +str(apk_id)
-                print query
-                cursor = self.connection.cursor()
-                cursor.execute(query)
-                # Questa variabile vale 0 se non e' presente quell'istruzione nell'apk selezionato
-                # altrimenti
-                esiste = len(cursor.fetchall())
-                if esiste == 0 and listaDegliOpcodesInAlmenoUnAPK.__contains__(opcode):
-                    listaDegliOpcodesInAlmenoUnAPK.remove(opcode)
-        for i in listaDegliOpcodesInAlmenoUnAPK:
-            print i
+                query = "SELECT * FROM apk_opcode_frequency_map WHERE " \
+                        "opcode_frequency_map_key='"+ opcode +"' AND  apk_id=" +str(apk_id)
+                res = self.executeQuery(query)
+                exist = len(res)
+                if exist == 0 and apkFeatures.__contains__(opcode):
+                    apkFeatures.remove(opcode)
+        return apkFeatures
 
 
     def getNumberOfAPK(self):
@@ -80,9 +68,13 @@ class database:
 
     def getSingleAPKfrequency(self, features, index):
         tmp = "SELECT opcode_frequency_map FROM apk_opcode_frequency_map WHERE "
-        count = 0
+        vectorOfFeatures = []
         for feature in features:
-            count += 1
             query = tmp + " apk_id=" + str(index) + \
-                    " and opcode_frequency_map_key=" + feature + ";"
+                    " and opcode_frequency_map_key='" + feature + "';"
             freq = self.executeQuery(query)
+            print freq
+            map = freq[0]
+            vectorOfFeatures.append(map["opcode_frequency_map"])
+        print "*****************"
+        return vectorOfFeatures
