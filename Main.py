@@ -2,7 +2,6 @@ import random
 from Util import computeErrors
 from Util import getListOfOpcode
 
-
 def filterData():
     opcodes = getListOfOpcode()
 
