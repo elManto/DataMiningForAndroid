@@ -1,6 +1,6 @@
 from Util import computeErrors
 from Util import getListOfOpcode
-from db import database
+from DB import database
 
 def filterData(db):
     opcodes = getListOfOpcode()
@@ -29,6 +29,7 @@ def main():
 
     numberOfIstructions = len(commonFeatures)
     W = [1 for i in range(0, numberOfIstructions)]
+
     answers = db.getIsMalware()
 
 

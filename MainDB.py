@@ -1,4 +1,4 @@
-from db import database
+from DB import database
 from Util import getListOfOpcode
 
 opcodeList = getListOfOpcode()
