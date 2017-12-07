@@ -28,12 +28,13 @@ class database:
         apkFeatures = list(listOfOpcodes)
 
         # ...then, opcodes which are not contained in every APK are removed
-        query = "SELECT * FROM apk"
+        query = "SELECT * FROM apk LIMIT 2000"
         tuple = self.executeQuery(query)
         for tupla in tuple:
             arrayIdAPK.append(tupla['id'])
 
         for apk_id in arrayIdAPK:
+            print "processing apk number %s" % apk_id
             for opcode in listOfOpcodes:
                 query = "SELECT * FROM apk_opcode_frequency_map WHERE " \
                         "opcode_frequency_map_key='"+ opcode +"' AND  apk_id=" +str(apk_id)
