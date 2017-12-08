@@ -6,47 +6,52 @@ import random
 import time
 
 def filterData(db):
-    opcodes = getListOfOpcode()
-    features = db.defineFeature(opcodes)
-    return features
+    X = db.defineFeature()
+    return X
 
 
 
 if __name__ == "__main__":
 
-    pwd = raw_input("insert db password: ")
-    db = database("localhost", "root", pwd, "opcodes")
+    #pwd = raw_input("insert db password: ")
+    db = database("localhost", "root", "MmscC,eh43a", "opcodes")
     numberOfAPK = db.getNumberOfAPK()  # total dimension of dataset
 
 
 
     #commonFeatures = filterData(db)
-    commonFeatures = filterData(db)
+    X = filterData(db)
 
-    print "common features"
-    print commonFeatures
-
-    time.sleep(30)
-
-    print "Before loop"
-    X = []  # Matrix containing each APK vector
-    for i in range(1, numberOfAPK + 1):
-        print "apk number %s" % i
-        frequencyVector = db.getSingleAPKfrequency(commonFeatures, i)
-        print len(frequencyVector)
-        X.append(frequencyVector)
 
     answers = db.getIsMalware()
-    for i in range(0, len(answers)):
-        if answers[i] == 0:
-            print "%s --> 0" % i
+
+    #shuffle
+    total = []
+    for i in range(0, len(X)):
+        tmp = []
+        tmp.append(X[i])
+        tmp.append(answers[i])
+        total.append(tmp)
+
+    random.shuffle(total)
+
+    X = []
+    answers = []
+    for i in range(0, len(total)):
+        X.append(total[i][0])
+        answers.append(total[i][1])
+    # Matrix containing each APK vector
+
+
+
+
     # split between train and test
     test = []
     train = []
     train_answers = []
     test_answers = []
     for i in range(1, len(X)):
-        if (random.uniform(0, 1) > 0.5):
+        if (random.uniform(0, 1) > 0.5 or len(test) == 100):
             train.append(X[i])
             train_answers.append(answers[i])
         else:
@@ -54,14 +59,10 @@ if __name__ == "__main__":
             test_answers.append(answers[i])
 
 
-
-
     clf = svm.SVC()
     clf.fit(train, train_answers)
 
 
-    counter = 500
-    false = 0
     res = clf.predict(test)
     print res
     correct = 0

@@ -1,7 +1,14 @@
-from DB import database
-from Util import getListOfOpcode
 
-opcodeList = getListOfOpcode()
+import enum
 
-database = database("localhost","root"," ", "opcodes")
-database.defineFeature(["ADD_DOUBLE_2ADDR"])
+class EnumOpcodes(enum.Enum):
+    GOTO    = 1
+    IF      = 2
+    INVOKE  = 3
+    SWITCH  = 4
+
+for i in list(EnumOpcodes):
+    print i.name
+
+
+

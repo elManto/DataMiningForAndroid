@@ -1,6 +1,12 @@
 import pymysql.cursors
 import struct
+import enum
 
+class EnumOpcodes(enum.Enum):
+    GOTO    = 1
+    IF      = 2
+    INVOKE  = 3
+    SWITCH  = 4
 
 
 class database:
@@ -20,29 +26,48 @@ class database:
     This function takes as input a list of all the opcodes and checks if that
     opcode is contained in every APK
     '''
-    def defineFeature(self, listOfOpcodes):
+    def defineFeature(self):
         # Creates an array which will contain all the id of the different APK
         arrayIdAPK = []
 
-        # Initializes the array with all the existent opcodes...
-        apkFeatures = list(listOfOpcodes)
-
         # ...then, opcodes which are not contained in every APK are removed
-        query = "SELECT * FROM apk LIMIT 2000"
+        query = "SELECT * FROM apk"
         tuple = self.executeQuery(query)
         for tupla in tuple:
+            print "inserisco l pak con id " + str(tupla['id'])
             arrayIdAPK.append(tupla['id'])
+        print "lunghezza ->" + str(len(arrayIdAPK))
 
+        X = []
+        apkVector = []
         for apk_id in arrayIdAPK:
             print "processing apk number %s" % apk_id
-            for opcode in listOfOpcodes:
-                query = "SELECT * FROM apk_opcode_frequency_map WHERE " \
-                        "opcode_frequency_map_key='"+ opcode +"' AND  apk_id=" +str(apk_id)
+            for opcode in list(EnumOpcodes):
+                name = opcode.name
+                if name == "GOTO" or name == "IF" or name == "INVOKE":
+                    query = "SELECT * FROM apk_opcode_frequency_map WHERE " \
+                        "opcode_frequency_map_key LIKE '"+ name +"%' " \
+                        "AND  apk_id=" +str(apk_id)
+                else:
+                    query = "SELECT * FROM apk_opcode_frequency_map WHERE " \
+                            "opcode_frequency_map_key LIKE '%" + name + "' " \
+                            "AND  apk_id=" + str(apk_id)
+
                 res = self.executeQuery(query)
+                sum = 0
+                for dictionary in res:
+                    sum +=dictionary['opcode_frequency_map']
                 exist = len(res)
-                if exist == 0 and apkFeatures.__contains__(opcode):
-                    apkFeatures.remove(opcode)
-        return apkFeatures
+                if exist == 0:
+                    apkVector.append(0)
+                else:
+                    apkVector.append(sum)
+            X.append(apkVector)
+            apkVector = []
+
+        return X
+
+
 
 
     def getNumberOfAPK(self):
@@ -61,6 +86,7 @@ class database:
 
 
     def getIsMalware(self):
+        # type: () -> object
         query = "SELECT is_malware FROM apk;"
         listOfDictionary = self.executeQuery(query)
         return [struct.unpack('h', field["is_malware"] + "\x00")[0]
@@ -79,3 +105,18 @@ class database:
             vectorOfFeatures.append(map["opcode_frequency_map"])
         print "*****************"
         return vectorOfFeatures
+
+
+    def retrieveFlowInstructions(self, apkId, flowInstructionList):
+        query = "SELECT opcode_frequency_map FROM apk_opcode_frequency_map WHERE " \
+                "apk_id=" + str(apkId)
+
+        frequencyList = []
+        for key in flowInstructionList:
+            tmp = "AND opcode_frequency_map_key='" + key + "'"
+            res = self.executeQuery(query + tmp)
+            frequencyList.append(res)
+
+
+
+
