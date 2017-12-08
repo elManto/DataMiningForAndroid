@@ -1,33 +1,30 @@
 from DB import database
-from Util import getListOfOpcode
 from sklearn import svm
-from copy import copy
 import random
-import time
 
-def filterData(db):
-    X = db.defineFeature()
-    return X
-
-
+'''
+We choose 
+'''
 
 if __name__ == "__main__":
 
     #pwd = raw_input("insert db password: ")
     db = database("localhost", "root", "MmscC,eh43a", "opcodes")
-    numberOfAPK = db.getNumberOfAPK()  # total dimension of dataset
 
+    # total dimension of dataset
+    numberOfAPK = db.getNumberOfAPK()
 
+    # we build the matrix containing for each row the features
+    X = db.defineFeature()
 
-    #commonFeatures = filterData(db)
-    X = filterData(db)
-
-
+    # vector containing answers i.e. value of attribute "is_malware"
     answers = db.getIsMalware()
 
-    #shuffle
+    #shuffle...
+
     total = []
     for i in range(0, len(X)):
+        # we must shuffle X together answers...
         tmp = []
         tmp.append(X[i])
         tmp.append(answers[i])
@@ -35,14 +32,12 @@ if __name__ == "__main__":
 
     random.shuffle(total)
 
+    # Matrix containing each APK vector and answers vector, after shuffling
     X = []
     answers = []
     for i in range(0, len(total)):
         X.append(total[i][0])
         answers.append(total[i][1])
-    # Matrix containing each APK vector
-
-
 
 
     # split between train and test
@@ -59,10 +54,12 @@ if __name__ == "__main__":
             test_answers.append(answers[i])
 
 
+    # train with svm
     clf = svm.SVC()
     clf.fit(train, train_answers)
 
 
+    # test
     res = clf.predict(test)
     print res
     correct = 0
