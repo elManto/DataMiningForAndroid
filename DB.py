@@ -34,10 +34,9 @@ class database:
         query = "SELECT * FROM apk"
         tuple = self.executeQuery(query)
         for tupla in tuple:
-            print "inserisco l pak con id " + str(tupla['id'])
             arrayIdAPK.append(tupla['id'])
-        print "lunghezza ->" + str(len(arrayIdAPK))
 
+        # matrix contained for all apk frequency set of opcodes
         X = []
         apkVector = []
         for apk_id in arrayIdAPK:
@@ -53,11 +52,13 @@ class database:
                             "opcode_frequency_map_key LIKE '%" + name + "' " \
                             "AND  apk_id=" + str(apk_id)
 
-                res = self.executeQuery(query)
+                queryResult = self.executeQuery(query)
+
+                # sum of frequency of IF_ ... and other
                 sum = 0
-                for dictionary in res:
+                for dictionary in queryResult:
                     sum +=dictionary['opcode_frequency_map']
-                exist = len(res)
+                exist = len(queryResult)
                 if exist == 0:
                     apkVector.append(0)
                 else:
@@ -86,36 +87,13 @@ class database:
 
 
     def getIsMalware(self):
-        # type: () -> object
         query = "SELECT is_malware FROM apk;"
         listOfDictionary = self.executeQuery(query)
         return [struct.unpack('h', field["is_malware"] + "\x00")[0]
                for field in listOfDictionary]
 
 
-    def getSingleAPKfrequency(self, features, index):
-        tmp = "SELECT opcode_frequency_map FROM apk_opcode_frequency_map WHERE "
-        vectorOfFeatures = []
-        for feature in features:
-            query = tmp + " apk_id=" + str(index) + \
-                    " and opcode_frequency_map_key='" + feature + "';"
-            freq = self.executeQuery(query)
-            print freq
-            map = freq[0]
-            vectorOfFeatures.append(map["opcode_frequency_map"])
-        print "*****************"
-        return vectorOfFeatures
 
-
-    def retrieveFlowInstructions(self, apkId, flowInstructionList):
-        query = "SELECT opcode_frequency_map FROM apk_opcode_frequency_map WHERE " \
-                "apk_id=" + str(apkId)
-
-        frequencyList = []
-        for key in flowInstructionList:
-            tmp = "AND opcode_frequency_map_key='" + key + "'"
-            res = self.executeQuery(query + tmp)
-            frequencyList.append(res)
 
 
 
