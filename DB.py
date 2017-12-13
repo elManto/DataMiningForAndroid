@@ -7,6 +7,8 @@ class EnumOpcodes(enum.Enum):
     IF      = 2
     INVOKE  = 3
     SWITCH  = 4
+    ADD     = 5
+
 
 
 class database:
@@ -43,7 +45,7 @@ class database:
             print "processing apk number %s" % apk_id
             for opcode in list(EnumOpcodes):
                 name = opcode.name
-                if name == "GOTO" or name == "IF" or name == "INVOKE":
+                if name == "GOTO" or name == "IF" or name == "INVOKE" or name == "ADD":
                     query = "SELECT * FROM apk_opcode_frequency_map WHERE " \
                         "opcode_frequency_map_key LIKE '"+ name +"%' " \
                         "AND  apk_id=" +str(apk_id)
@@ -91,6 +93,42 @@ class database:
         listOfDictionary = self.executeQuery(query)
         return [struct.unpack('h', field["is_malware"] + "\x00")[0]
                for field in listOfDictionary]
+
+
+    def getMalwareTypicalOpcodes(self):
+        l = []
+        f = open('total_opcode_list.txt', 'r')
+        while(True):
+            s = f.readline()
+            if s != "":
+                l.append(s[:len(s) - 1])
+            else:
+                break
+        print l
+        nonMatchList = []
+        status = 0
+        for opcode in l:
+            print "status-> " + str(status)
+            status += 1
+            query = "SELECT apk_id FROM apk_opcode_frequency_map WHERE " \
+                        "opcode_frequency_map_key ='"+ opcode + "'"
+            res = self.executeQuery(query)
+            d = dict()
+            d["opcode"] = opcode
+            d["is_malware"] = 0
+            d["is_goodware"] = 0
+            for i in res:
+                if i['apk_id'] < 1015:
+                    d["is_goodware"] += 1
+                else:
+                    d["is_malware"] += 1
+            nonMatchList.append(d)
+        for i in nonMatchList:
+            print i
+
+
+
+
 
 
 

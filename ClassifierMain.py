@@ -1,4 +1,5 @@
 from DB import database
+import numpy as np
 from sklearn import svm
 import random
 
@@ -20,57 +21,68 @@ if __name__ == "__main__":
     # vector containing answers i.e. value of attribute "is_malware"
     answers = db.getIsMalware()
 
-    #shuffle...
+    err_list = []
+    correct_list = []
+    for round in range(0, 10):
+        # shuffle...
+        total = []
+        for i in range(0, len(X)):
+            # we must shuffle X together answers...
+            tmp = []
+            tmp.append(X[i])
+            tmp.append(answers[i])
+            total.append(tmp)
 
-    total = []
-    for i in range(0, len(X)):
-        # we must shuffle X together answers...
-        tmp = []
-        tmp.append(X[i])
-        tmp.append(answers[i])
-        total.append(tmp)
+        random.shuffle(total)
 
-    random.shuffle(total)
-
-    # Matrix containing each APK vector and answers vector, after shuffling
-    X = []
-    answers = []
-    for i in range(0, len(total)):
-        X.append(total[i][0])
-        answers.append(total[i][1])
-
-
-    # split between train and test
-    test = []
-    train = []
-    train_answers = []
-    test_answers = []
-    for i in range(1, len(X)):
-        if (random.uniform(0, 1) > 0.5 or len(test) == 100):
-            train.append(X[i])
-            train_answers.append(answers[i])
-        else:
-            test.append(X[i])
-            test_answers.append(answers[i])
+        # Matrix containing each APK vector and answers vector, after shuffling
+        X = []
+        answers = []
+        for i in range(0, len(total)):
+            X.append(total[i][0])
+            answers.append(total[i][1])
 
 
-    # train with svm
-    clf = svm.SVC()
-    clf.fit(train, train_answers)
+        # split between train and test
+        test = []
+        train = []
+        train_answers = []
+        test_answers = []
+        for i in range(1, len(X)):
+            if (random.uniform(0, 1) > 0.5 or len(test) == 100):
+                train.append(X[i])
+                train_answers.append(answers[i])
+            else:
+                test.append(X[i])
+                test_answers.append(answers[i])
 
 
-    # test
-    res = clf.predict(test)
-    print res
-    correct = 0
-    errors = 0
-    for i in range(0, len(res)):
-        if res[i] == test_answers[i]:
-            correct += 1
-        else:
-            errors += 1
+        # train with svm
+        clf = svm.SVC()
+        clf.verbose = True
+        classifier =clf.fit(train, train_answers)
+        print classifier
 
-    print "errors -> " + str(errors) + ", correct -> " + str(correct)
+
+        # test
+        res = clf.predict(test)
+        print res
+        correct = 0
+        errors = 0
+        for i in range(0, len(res)):
+            if res[i] == test_answers[i]:
+                correct += 1
+            else:
+                errors += 1
+
+        print "errors -> " + str(errors) + ", correct -> " + str(correct)
+        err_list.append(errors)
+        correct_list.append(correct)
+
+    print "avg errors -> " + str(np.mean(err_list)) + "," \
+            " avg correct -> " + str(np.mean(correct_list))
+
+
 
 
 

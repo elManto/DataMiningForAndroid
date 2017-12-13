@@ -1,14 +1,6 @@
+import DB
 
-import enum
-
-class EnumOpcodes(enum.Enum):
-    GOTO    = 1
-    IF      = 2
-    INVOKE  = 3
-    SWITCH  = 4
-
-for i in list(EnumOpcodes):
-    print i.name
-
+db = DB.database("localhost", "root", "MmscC,eh43a", "opcodes")
+db.getMalwareTypicalOpcodes()
 
 
