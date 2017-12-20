@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
     err_list = []
     correct_list = []
+    # we run the training and testing 10 times just to test different executions
     for round in range(0, 10):
         # shuffle...
         total = []
@@ -59,9 +60,8 @@ if __name__ == "__main__":
 
         # train with svm
         clf = svm.SVC()
-        clf.verbose = True
         classifier =clf.fit(train, train_answers)
-        print classifier
+
 
 
         # test
